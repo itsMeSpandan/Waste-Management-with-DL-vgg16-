@@ -1,0 +1,136 @@
+# Waste Classifier (Kaggle + GUI)
+
+A simple waste classification project that can:
+- Download and organize a Kaggle dataset
+- Train a VGG16-based classifier (224×224)
+- Train an optional EfficientNet-B7 model (advanced; slower on CPU)
+- Visualize training curves and confusion matrices
+- Classify images via a desktop GUI (Tkinter)
+
+Works on Windows with Python and TensorFlow (CPU or GPU if available).
+
+## Features
+
+- Kaggle dataset integration with guided setup
+- Transfer learning (VGG16; optional EfficientNet-B7)
+- Data augmentation and early stopping
+- Menu-driven training scripts
+- Saved training plots and JSON history
+- Tkinter GUI with "Wet Waste" vs "Dry Waste (Recyclable)" outputs
+
+## Project structure
+
+- `waste_classifier_with_kaggle.py` - Menu tool to download data, organize, train VGG16, classify images, and view training plots
+- `waste_classifier_gui.py` - Simple GUI to classify images using the trained VGG16 model
+- `efficientnet_b7_trainer.py` - Advanced EfficientNet-B7 trainer with progressive training and evaluation (optional)
+- `train_waste_classifier.py` - Alternate trainer with a 3-class example structure (organic_waste, dry_waste, mixed_waste)
+- `requirements.txt` - Python dependencies
+- `waste_dataset/` and `hiii/waste_dataset/` - Example dataset folders (various structures are handled)
+- `logs/` - Training logs (TensorBoard event files)
+
+Outputs commonly created by the tools:
+- `trained_waste_model.h5` - Best VGG16 model
+- `training_history.png`, `training_history.json` - Plots and metrics for VGG16 training
+- `efficientnet_b7_waste_model.h5`, `efficientnet_b7_*` - Artifacts from EfficientNet-B7 trainer (if used)
+
+## Requirements
+
+- Python 3.10+ (tested with Python 3.13)
+- TensorFlow ≥ 2.20 (CPU by default)
+- Other libs listed in `requirements.txt`
+
+Install dependencies:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+If you have an NVIDIA GPU and compatible drivers/CUDA, you may optionally install GPU-enabled TensorFlow (see TensorFlow docs).
+
+## Kaggle setup (for dataset download)
+
+You can either place credentials ahead of time or provide them interactively when prompted by the script.
+
+- Create a Kaggle API token at https://www.kaggle.com/settings (API -> Create New API Token)
+- Save the downloaded `kaggle.json` to `%USERPROFILE%\.kaggle\kaggle.json` (Windows)
+
+The script can also create the file for you interactively.
+
+## Training with VGG16 (recommended start)
+
+Use `waste_classifier_with_kaggle.py`:
+
+- Option 1: Download dataset and train
+- Option 2: Train with existing downloaded dataset (it will organize into `waste_dataset/organized/{train,val}/...`)
+- Option 3: Classify a single image
+- Option 4: Show training graphs/plots (reuses saved `training_history.json` if present)
+
+The best model is saved to `trained_waste_model.h5`.
+
+### Viewing plots later
+
+If you've already trained once, you can view the plots again using the menu option 4. The script stores:
+- `training_history.png` — The final figure
+- `training_history.json` — Raw history data used to re-render the plots
+
+## GUI: classify an image
+
+After training VGG16 (`trained_waste_model.h5` exists), launch the GUI:
+
+```powershell
+python waste_classifier_gui.py
+```
+
+- Click "Select Image" and then "Classify Waste"
+- The GUI displays:
+  - Class: "WET WASTE" (for organic) or "DRY WASTE (Recyclable)"
+  - Confidence
+  - Percentages for Wet vs Dry
+
+## EfficientNet-B7 trainer (optional, advanced)
+
+Use `efficientnet_b7_trainer.py` if you want a stronger backbone. Notes:
+- EfficientNet-B7 trains at larger input sizes and can be slow on CPU
+- The script attempts to load ImageNet weights; if incompatible for your TF/Keras version, it falls back to randomly initialized weights so training still runs
+- Produces artifacts like `efficientnet_b7_waste_model.h5`, evaluation JSON, and plots
+
+If training is too slow on your machine, prefer the VGG16 trainer or reduce input size/batch size in the script.
+
+## Alternate trainer: `train_waste_classifier.py`
+
+This script demonstrates a 3‑class setup and a more manual dataset preparation flow (`prepared_data/` structure). It’s useful if you want a different label set or to study the code.
+
+## Troubleshooting
+
+- Blank training plots
+  - The VGG16 trainer prints diagnostics with detected history keys and series lengths
+  - Ensure training actually had samples (the script prints counts for train/val)
+  - If `training_history.json` has empty arrays, delete it and retrain; then use option 4 to view plots
+  - The Learning Rate panel may be empty unless a scheduler logs LR
+
+- Kaggle download errors
+  - Verify `kaggle.json` permissions and location: `%USERPROFILE%\.kaggle\kaggle.json`
+  - Make sure `pip install kaggle` succeeded
+
+- EfficientNet weights errors
+  - The trainer catches ImageNet weight shape mismatches and falls back to `weights=None`
+  - Training will still run but may need more epochs
+
+- No GPU available
+  - Everything runs on CPU by default; it’s slower, especially for EfficientNet‑B7
+  - Stick to the VGG16 trainer or reduce image size
+
+## Notes
+
+- Labels: The GUI displays “Wet Waste” instead of “Organic” in outputs
+- Dataset organization: The scripts are resilient to several common Kaggle dataset layouts and will create an `organized/` folder for training/validation
+
+## License
+
+This repository is for personal/educational use. Datasets belong to their respective owners on Kaggle.
+
+## Acknowledgements
+
+- Keras Applications: VGG16, EfficientNet
+- Kaggle for datasets
+- Matplotlib/Seaborn for visualization
