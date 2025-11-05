@@ -80,16 +80,6 @@ WasteClassifierGUI
 ├── Results Management (display_results, save_results, clear_results)
 └── Utility Functions (update_status)
 ```
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
 ## Class Structure
 
 ### WasteClassifierGUI
@@ -148,9 +138,6 @@ The interface consists of several key components:
 │                 │   Status      │
 └─────────────────┴───────────────┘
 ```
-<br>
-<br>
-
 **Components Created**:
 - Title frame with application branding
 - Main container with left/right panels
@@ -320,10 +307,6 @@ The interface consists of several key components:
    - Click "🗑️ Clear" to reset
    - Select new image for another classification
 
-<br>
-<br>
-<br>
-
 ### Model Requirements
 
 The application expects a trained model file at:
@@ -456,3 +439,4 @@ waste_classifier_gui.py          # Main GUI application
 ---
 
 *This documentation covers all aspects of the Waste Classifier GUI application. For technical support or feature requests, please refer to the project repository or contact the development team.*
+
